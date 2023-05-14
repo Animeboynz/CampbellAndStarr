@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+      <html>
+      <head>
+      <title>Campbell and Starr Bakers</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <!-- Logo -->
+  <a class="navbar-brand" href="#"><img src="Assets/logo_transparent.png" alt="Campbell and Starr Bakers" height="50"></a>
+
+  <!-- Login Button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Navigation Links -->
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Our Loaves</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Our Story</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Create a Business Account</a>
+      </li>
+      <li class="nav-item">
+        <a href="index.html">
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#loginModal">Logout</button>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Login</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" id="username" placeholder="Enter username">
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" id="password" placeholder="Enter password">
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="login()">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Order Form -->
+<div class="container my-4">
+  <h2>Order Form</h2>
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Product</th>
+      <th>Price</th>
+      <th>Quantity</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>Loaf 1</td>
+      <td>$10</td>
+      <td><input type="number" class="form-control" id="quantity1" value="0"></td>
+    </tr>
+    <tr>
+      <td>Loaf 2</td>
+      <td>$12</td>
+      <td><input type="number" class="form-control" id="quantity2" value="0"></td>
+    </tr>
+
+    <tr>
+      <td>Loaf 15</td>
+      <td>$17</td>
+      <td><input type="number" class="form-control" id="quantity15" value="0"></td>
+    </tr>
+    <tr>
+      <td>Loaf 16</td>
+      <td>$20</td>
+      <td><input type="number" class="form-control" id="quantity16" value="0"></td>
+    </tr>
+    </tbody>
+  </table>
+  <button class="btn btn-primary" onclick="submitOrder()">Order</button>
+</div>
+
+<!-- Order Summary Modal -->
+<div class="modal fade" id="orderSummaryModal" tabindex="-1" role="dialog" aria-labelledby="orderSummaryModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="orderSummaryModalLabel">Order Summary</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Company Name:</strong> Countdown Supermarkets</p>
+        <p><strong>Acc.no:</strong> 00233</p>
+        <p><strong>Invoice Number:</strong> 321223</p>
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+          </tr>
+          </thead>
+          <tbody id="orderSummaryBody">
+          </tbody>
+        </table>
+        <p class="text-right"><strong>Total:</strong> $<span id="orderSummaryTotal"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="submitOrderConfirmation()">Confirm Order</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function submitOrder() {
+    // Get the quantities for each product
+    var quantities = [
+      parseInt(document.getElementById("quantity1").value),
+      parseInt(document.getElementById("quantity2").value),
+      // Add more quantities for the other products
+      parseInt(document.getElementById("quantity15").value),
+      parseInt(document.getElementById("quantity16").value)
+    ];
+
+    // Compute the total price
+    var prices = [10, 12, /* Add more prices for the other products */ 17, 20];
+    var total = 0;
+    for (var i = 0; i < quantities.length; i++) {
+      total += quantities[i] * prices[i];
+    }
+
+    // Generate the order summary
+    var orderSummaryBody = document.getElementById("orderSummaryBody");
+    orderSummaryBody.innerHTML = "";
+    for (var i = 0; i < quantities.length; i++) {
+      if (quantities[i] > 0) {
+        var tr = document.createElement("tr");
+        var td1 = document.createElement("td");
+        var td2 = document.createElement("td");
+        var td3 = document.createElement("td");
+        td1.innerText = "Loaf" + (i+1);
+        td2.innerText = "$" + prices[i];
+        td3.innerText = quantities[i];
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        tr.appendChild(td3);
+        orderSummaryBody.appendChild(tr);
+      }
+    }		// Display the total price
+    document.getElementById("orderSummaryTotal").innerText = total.toFixed(2);
+
+    // Show the order summary modal
+    $('#orderSummaryModal').modal('show');
+  }
+
+  function randnum()
+  {
+    return Math.random() * 999999;
+
+  }
+  function submitOrderConfirmation() {
+    // Get the quantities for each product
+    var quantities = [
+      parseInt(document.getElementById("quantity1").value),
+      parseInt(document.getElementById("quantity2").value),
+      // Add more quantities for the other products
+      parseInt(document.getElementById("quantity15").value),
+      parseInt(document.getElementById("quantity16").value)
+    ];
+
+    // Compute the total price
+    var prices = [10, 12, /* Add more prices for the other products */ 17, 20];
+    var total = 0;
+    for (var i = 0; i < quantities.length; i++) {
+      total += quantities[i] * prices[i];
+    }
+
+    // Generate the order summary
+    var orderSummary = {
+      "companyName": "Countdown Supermarkets",
+      "accountNumber": "00233",
+      "invoiceNumber": "321223",
+      "products": []
+    };
+    for (var i = 0; i < quantities.length; i++) {
+      if (quantities[i] > 0) {
+        var product = {
+          "name": "Loaf " + (i+1),
+          "price": prices[i],
+          "quantity": quantities[i]
+        };
+        orderSummary.products.push(product);
+      }
+    }
+
+    orderSummary.total = total;
+
+    // Convert the order summary to JSON
+    var jsonOrderSummary = JSON.stringify(orderSummary);
+
+    var discord = {
+      "username": "Webhook",
+      "avatar_url": "https://i.imgur.com/4M34hi2.png",
+      "content": "```" + jsonOrderSummary + "```",
+    }
+
+    const Url = 'https://discord.com/api/webhooks/1031451697110855700/PwawV-tQRnkoGCslWauiXfVXX7n3yUr_IfmmO1yOWUAZJo0BmkohDub4WxE05r7GdWST';
+
+    $.post(Url, discord, function(discord, status) {
+      //alert(`status is ${status}`);
+    });
+    alert(`Order Placed`);
+  }
+
+</script>
+</body>
+</html>
